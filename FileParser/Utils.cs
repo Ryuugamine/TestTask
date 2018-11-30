@@ -148,11 +148,15 @@ namespace FileParser
                     string[] paths = expr.Split('-');
                     for (int i = 0; i < paths.Length; i++)
                     {
-                        values.Add(ParseExpression(paths[i]));
+                        if(!paths[i].Equals(""))
+                            values.Add(ParseExpression(paths[i]));
                     }
                     int res = 0;
-                    res = values[0];
-                    for (int i = 1; i < paths.Length; i++)
+                    if (paths[0].Equals(""))
+                        res = -values[0];
+                    else res = values[0];
+
+                    for (int i = 1; i < values.Count; i++)
                     {
                         res -= values[i];
                     }
