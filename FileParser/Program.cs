@@ -113,7 +113,7 @@ namespace FileParser
                 PrintValue(s.Split(' ')[1]);
             if (s.Contains(" = "))
             {
-                s.Replace(" ", "");
+                s = s.Replace(" ", "");
                 string[] paths = s.Split('=');
                 if (variables.ContainsKey(paths[0]))
                 {
@@ -130,26 +130,41 @@ namespace FileParser
         static int ParseExpression(String expr)
         {
             List<int> values = new List<int>();
+           
+            if (expr.Contains("("))
+            {
+                int start = expr.IndexOf('(')+1;
+                int length;
+                string buf = expr.Substring(start);
+                string subexpr;
+
+                int count = 1;
+                while (count > 0)
+                {
+                    if (buf.IndexOf('(') < buf.IndexOf(')') && buf.IndexOf('(') > 0)
+                    {
+                        buf = buf.Substring(buf.IndexOf('(')+1);
+                        count++;
+                    }
+                    else
+                    {
+                        buf = buf.Substring(buf.IndexOf(')')+1);
+                        count--;
+                    }
+                }
+                length = expr.Length - buf.Length - start -1;
+                subexpr = expr.Substring(start, length);
+                string replaceValue = ParseExpression(subexpr).ToString();
+                if (replaceValue.Substring(0, 1).Equals("-"))
+                    replaceValue = "0"+replaceValue;
+                expr = expr.Replace("("+subexpr+")", replaceValue);
+            }
+
             int operationCount = GetOperationCount(expr);
 
             if (operationCount > 1)
             {
-                if (expr.Contains("-"))
-                {
-                    string[] paths = expr.Split('-');
-                    for (int i = 0; i < paths.Length; i++)
-                    {
-                        values.Add(ParseExpression(paths[i]));
-                    }
-                    int res = 0;
-                    res = values[0];
-                    for (int i = 1; i < paths.Length; i++)
-                    {
-                        res -= values[i];
-                    }
-                    return res;
-                }
-                else if (expr.Contains("+"))
+                if (expr.Contains("+"))
                 {
                     string[] paths = expr.Split('+');
                     for (int i = 0; i < paths.Length; i++)
@@ -161,6 +176,21 @@ namespace FileParser
                     for (int i = 1; i < paths.Length; i++)
                     {
                         res += values[i];
+                    }
+                    return res;
+                }
+                else if (expr.Contains("-"))
+                {
+                    string[] paths = expr.Split('-');
+                    for (int i = 0; i < paths.Length; i++)
+                    {
+                        values.Add(ParseExpression(paths[i]));
+                    }
+                    int res = 0;
+                    res = values[0];
+                    for (int i = 1; i < paths.Length; i++)
+                    {
+                        res -= values[i];
                     }
                     return res;
                 }
@@ -220,6 +250,9 @@ namespace FileParser
             {
                 if (expr.Contains("-"))
                 {
+                    if (expr.Substring(0, 1).Equals("-"))
+                        return -GetValues(expr.Substring(1));
+
                     int a, b;
                     string[] paths = expr.Split('-');
                     a = GetValues(paths[0]);
