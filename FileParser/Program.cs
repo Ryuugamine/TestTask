@@ -23,6 +23,9 @@ namespace FileParser
                 for(int i = 0; i<lines.Count; i++)
                 {
 
+                    if (lines[i].Equals("end"))
+                        break;                 
+
                     if (lines[i].Split(' ')[0].Equals("if"))
                     {
                         mark = Utils.ParseIf(lines[i]);

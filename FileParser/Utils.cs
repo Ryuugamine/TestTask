@@ -11,7 +11,7 @@ namespace FileParser
     static class Utils
     {
         static Dictionary<string, int> variables = new Dictionary<string, int>();
-        enum operation { mult, rem, div };
+        enum operation { mult, rem, div, add, sutr };
 
         public static List<String> ReadFile(String path)
         {
@@ -66,14 +66,14 @@ namespace FileParser
 
         public static String ParseLine(String s)
         {
-            if (s.Contains("goto"))
+            if (s.Contains(Constants.GO_TO))
             {
                 return s.Split(' ')[1];
             }
 
-            if (s.Contains("read"))
+            if (s.Contains(Constants.READ))
                 ReadValue(s.Split(' ')[1]);
-            if (s.Contains("print"))
+            if (s.Contains(Constants.PRINT))
                 PrintValue(s.Split(' ')[1]);
             if (s.Contains(" = "))
             {
@@ -91,46 +91,53 @@ namespace FileParser
             return null;
         }
 
+
+        private static string RemoveHooks(string expr)
+        {
+            int start = expr.IndexOf('(') + 1;
+            int length;
+            string buf = expr.Substring(start);
+            string subexpr;
+
+            int count = 1;
+            while (count > 0)
+            {
+                if (buf.IndexOf('(') < buf.IndexOf(')') && buf.IndexOf('(') > 0)
+                {
+                    buf = buf.Substring(buf.IndexOf('(') + 1);
+                    count++;
+                }
+                else
+                {
+                    buf = buf.Substring(buf.IndexOf(')') + 1);
+                    count--;
+                }
+            }
+            length = expr.Length - buf.Length - start - 1;
+            subexpr = expr.Substring(start, length);
+            string replaceValue = ParseExpression(subexpr).ToString();
+            if (replaceValue.ToCharArray()[0] == Constants.MINUS)
+                replaceValue = "0" + replaceValue;
+            return expr = expr.Replace("(" + subexpr + ")", replaceValue);
+        }
+    
+
         private static int ParseExpression(String expr)
         {
             List<int> values = new List<int>();
 
-            if (expr.Contains("("))
+            while (expr.Contains("("))
             {
-                int start = expr.IndexOf('(') + 1;
-                int length;
-                string buf = expr.Substring(start);
-                string subexpr;
-
-                int count = 1;
-                while (count > 0)
-                {
-                    if (buf.IndexOf('(') < buf.IndexOf(')') && buf.IndexOf('(') > 0)
-                    {
-                        buf = buf.Substring(buf.IndexOf('(') + 1);
-                        count++;
-                    }
-                    else
-                    {
-                        buf = buf.Substring(buf.IndexOf(')') + 1);
-                        count--;
-                    }
-                }
-                length = expr.Length - buf.Length - start - 1;
-                subexpr = expr.Substring(start, length);
-                string replaceValue = ParseExpression(subexpr).ToString();
-                if (replaceValue.Substring(0, 1).Equals("-"))
-                    replaceValue = "0" + replaceValue;
-                expr = expr.Replace("(" + subexpr + ")", replaceValue);
+                expr = RemoveHooks(expr);
             }
 
             int operationCount = GetOperationCount(expr);
 
             if (operationCount > 1)
             {
-                if (expr.Contains("+"))
+                if (expr.Contains(Constants.PLUS))
                 {
-                    string[] paths = expr.Split('+');
+                    string[] paths = expr.Split(Constants.PLUS);
                     for (int i = 0; i < paths.Length; i++)
                     {
                         values.Add(ParseExpression(paths[i]));
@@ -143,9 +150,9 @@ namespace FileParser
                     }
                     return res;
                 }
-                else if (expr.Contains("-"))
+                else if (expr.Contains(Constants.MINUS))
                 {
-                    string[] paths = expr.Split('-');
+                    string[] paths = expr.Split(Constants.MINUS);
                     for (int i = 0; i < paths.Length; i++)
                     {
                         if(!paths[i].Equals(""))
@@ -153,8 +160,13 @@ namespace FileParser
                     }
                     int res = 0;
                     if (paths[0].Equals(""))
+                    {
                         res = -values[0];
-                    else res = values[0];
+                    }
+                    else
+                    {
+                        res = values[0];
+                    }
 
                     for (int i = 1; i < values.Count; i++)
                     {
@@ -164,97 +176,27 @@ namespace FileParser
                 }
                 else
                 {
-                    int mult, div, rem;
-                    mult = expr.IndexOf('*');
-                    div = expr.IndexOf('/');
-                    rem = expr.IndexOf('%');
-                    String buf = expr;
-                    List<operation> order = new List<operation>();
-
-                    while (GetOperationCount(buf) > 0)
-                    {
-                        if ((mult < div || div < 0) && (mult < rem || rem < 0) && mult > 0)
-                        {
-                            order.Add(operation.mult);
-                            buf = buf.Substring(mult + 1);
-                        }
-                        if ((div < mult || mult < 0) && (div < rem || rem < 0) && div > 0)
-                        {
-                            order.Add(operation.div);
-                            buf = buf.Substring(div + 1);
-                        }
-                        if ((rem < div || div < 0) && (rem < mult || mult < 0) && rem > 0)
-                        {
-                            order.Add(operation.rem);
-                            buf = buf.Substring(rem + 1);
-                        }
-
-                        mult = buf.IndexOf('*');
-                        div = buf.IndexOf('/');
-                        rem = buf.IndexOf('%');
-                    }
-
                     String[] vars = Regex.Split(expr, @"\W");
+                    String[] oper = Regex.Split(expr, @"\w");
                     int res = GetValues(vars[0]);
                     for (int i = 0; i < vars.Length - 1; i++)
                     {
-                        switch (order[i])
-                        {
-                            case operation.mult:
-                                res *= GetValues(vars[i + 1]);
-                                break;
-                            case operation.div:
-                                res /= GetValues(vars[i + 1]);
-                                break;
-                            case operation.rem:
-                                res %= GetValues(vars[i + 1]);
-                                break;
-                        }
+                        res = Checker.check(oper[i + 1]).performAction(res, GetValues(vars[i + 1]));
                     }
                     return res;
                 }
             }
             else if (operationCount == 1)
             {
-                if (expr.Contains("-"))
+                String[] vars = Regex.Split(expr, @"\W");
+                String[] oper = Regex.Split(expr, @"\w");
+
+                if (expr.ToCharArray()[0] == Constants.MINUS)
                 {
-                    if (expr.Substring(0, 1).Equals("-"))
-                        return -GetValues(expr.Substring(1));
+                    return -GetValues(expr.Substring(1));
+                }     
+                return Checker.check(oper[1]).performAction(GetValues(vars[0]), GetValues(vars[1]));
 
-                    int a, b;
-                    string[] paths = expr.Split('-');
-                    a = GetValues(paths[0]);
-                    b = GetValues(paths[1]);
-
-                    return a - b;
-                }
-                else if (expr.Contains("+"))
-                {
-                    int a, b;
-                    string[] paths = expr.Split('+');
-                    a = GetValues(paths[0]);
-                    b = GetValues(paths[1]);
-
-                    return a + b;
-                }
-                else if (expr.Contains("*"))
-                {
-                    int a, b;
-                    string[] paths = expr.Split('*');
-                    a = GetValues(paths[0]);
-                    b = GetValues(paths[1]);
-
-                    return a * b;
-                }
-                else
-                {
-                    int a, b;
-                    string[] paths = expr.Split('/');
-                    a = GetValues(paths[0]);
-                    b = GetValues(paths[1]);
-
-                    return a / b;
-                }
             }
             else return GetValues(expr);
         }
@@ -262,11 +204,11 @@ namespace FileParser
         private static int GetOperationCount(String s)
         {
             int operationCount = 0;
-            operationCount += s.Split('+').Length - 1;
-            operationCount += s.Split('-').Length - 1;
-            operationCount += s.Split('*').Length - 1;
-            operationCount += s.Split('/').Length - 1;
-            operationCount += s.Split('%').Length - 1;
+            operationCount += s.Split(Constants.PLUS).Length - 1;
+            operationCount += s.Split(Constants.MINUS).Length - 1;
+            operationCount += s.Split(Constants.MULTIPLY).Length - 1;
+            operationCount += s.Split(Constants.DIVIDE).Length - 1;
+            operationCount += s.Split(Constants.REMAINDER).Length - 1;
 
             return operationCount;
         }
@@ -275,25 +217,20 @@ namespace FileParser
         {
             int value;
 
-            try
-            {
-                value = int.Parse(s);
-            }
-            catch (Exception e)
-            {
+            if (!int.TryParse(s, out value))
                 value = variables[s];
-            }
 
             return value;
         }
 
         private static void PrintValue(String s)
         {
-            try
+            int value;
+            if (int.TryParse(s, out value))
             {
-                Console.WriteLine(int.Parse(s));
+                Console.WriteLine(value);
             }
-            catch (Exception e)
+            else
             {
                 Console.WriteLine(variables[s]);
             }
