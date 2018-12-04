@@ -8,19 +8,19 @@ namespace FileParser
 {
     public class Checker
     {
-        public static Operation check(string operation)
+        public static Operation check(char operation)
         {
             switch (operation)
             {
-                case "+":
+                case Constants.PLUS:
                     return new Add();
-                case "-":
+                case Constants.MINUS:
                     return new Subtract();
-                case "/":
+                case Constants.DIVIDE:
                     return new Divide();
-                case "*":
+                case Constants.MULTIPLY:
                     return new Multiply();
-                case "%":
+                case Constants.REMAINDER:
                     return new Remainder();
             }
             return null;
