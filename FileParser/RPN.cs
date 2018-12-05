@@ -26,13 +26,13 @@ namespace FileParser
         {
             switch (s)
             {
-                case '(': return 0;
-                case ')': return 1;
-                case '+': return 2;
-                case '-': return 3;
-                case '*': return 4;
-                case '/': return 4;
-                case '%': return 4;
+                case Constants.LEFT_HOOK: return 0;
+                case Constants.RIGHT_HOOK: return 1;
+                case Constants.PLUS: return 2;
+                case Constants.MINUS: return 3;
+                case Constants.REMAINDER: return 4;
+                case Constants.DIVIDE: return 4;
+                case Constants.MULTIPLY: return 4;
                 default: return 5;
             }
         }
@@ -74,14 +74,14 @@ namespace FileParser
                 
                 if (IsOperator(input[i])) 
                 {
-                    if (input[i] == '(')
+                    if (input[i] == Constants.LEFT_HOOK)
                         operStack.Push(input[i]); 
-                    else if (input[i] == ')') 
+                    else if (input[i] == Constants.RIGHT_HOOK) 
                     {
                        
                         char s = operStack.Pop();
 
-                        while (s != '(')
+                        while (s != Constants.LEFT_HOOK)
                         {
                             output += s.ToString() + ' ';
                             s = operStack.Pop();

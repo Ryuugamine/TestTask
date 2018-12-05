@@ -13,8 +13,14 @@ namespace FileParser
         public const char REMAINDER = '%';
         public const char DIVIDE = '/';
         public const char MULTIPLY = '*';
+        public const char RIGHT_HOOK = ')';
+        public const char LEFT_HOOK = '(';
+
         public const string READ = "read";
         public const string PRINT = "print";
         public const string GO_TO = "goto";
+        public const string IF = "if";
+        public const string END = "end";
+
     }
 }

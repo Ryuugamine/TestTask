@@ -23,10 +23,10 @@ namespace FileParser
                 for(int i = 0; i<lines.Count; i++)
                 {
 
-                    if (lines[i].Equals("end"))
+                    if (lines[i].Equals(Constants.END))
                         break;                 
 
-                    if (lines[i].Split(' ')[0].Equals("if"))
+                    if (lines[i].Split(' ')[0].Equals(Constants.IF))
                     {
                         mark = Utils.ParseIf(lines[i]);
                     } else
@@ -38,7 +38,7 @@ namespace FileParser
                     {
                         for (int j = 0; j < lines.Count; j++)
                         {
-                            if (lines[j].Contains(mark) && !lines[j].Contains("goto"))
+                            if (lines[j].Contains(mark) && !lines[j].Contains(Constants.GO_TO))
                             {
                                 mark = null;
                                 i = j;
