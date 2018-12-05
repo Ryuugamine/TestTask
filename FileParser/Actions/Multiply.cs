@@ -8,7 +8,15 @@ namespace FileParser
 {
     public class Multiply : Operation
     {
-        public override int performAction(int a, int b)
+        private int a, b;
+
+        public Multiply(int a, int b)
+        {
+            this.a = a;
+            this.b = b;
+        }
+
+        public override int performAction()
         {
             return a * b;
         }

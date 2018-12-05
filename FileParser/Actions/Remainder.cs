@@ -8,7 +8,15 @@ namespace FileParser
 {
     public class Remainder : Operation
     {
-        public override int performAction(int a, int b)
+        private int a, b;
+
+        public Remainder(int a, int b)
+        {
+            this.a = a;
+            this.b = b;
+        }
+
+        public override int performAction()
         {
             return a % b;
         }

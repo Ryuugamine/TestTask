@@ -24,7 +24,9 @@ namespace FileParser
                 {
 
                     if (lines[i].Equals(Constants.END))
-                        break;                 
+                    {
+                        break;
+                    }
 
                     if (lines[i].Split(' ')[0].Equals(Constants.IF))
                     {

@@ -8,6 +8,6 @@ namespace FileParser
 {
     public abstract class Operation
     {
-        abstract public int performAction(int a, int b);
+        abstract public int performAction();
     }  
 }

@@ -43,18 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Add.cs" />
-    <Compile Include="Checker.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Divide.cs" />
-    <Compile Include="Multiply.cs" />
-    <Compile Include="Operation.cs" />
+    <Compile Include="Actions\Add.cs" />
+    <Compile Include="Utils\Checker.cs" />
+    <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Actions\Divide.cs" />
+    <Compile Include="Actions\Multiply.cs" />
+    <Compile Include="Actions\Operation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Remainder.cs" />
-    <Compile Include="RPN.cs" />
-    <Compile Include="Subtract.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Actions\Remainder.cs" />
+    <Compile Include="Utils\RPN.cs" />
+    <Compile Include="Actions\Subtract.cs" />
+    <Compile Include="Utils\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

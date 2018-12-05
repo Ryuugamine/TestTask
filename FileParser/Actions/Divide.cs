@@ -8,7 +8,15 @@ namespace FileParser
 {
     public class Divide : Operation
     {
-        public override int performAction(int a, int b)
+        private int a, b;
+
+        public Divide(int a, int b)
+        {
+            this.a = a;
+            this.b = b;
+        }
+        
+        public override int performAction()
         {
             return a/b;
         }

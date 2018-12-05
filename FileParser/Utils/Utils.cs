@@ -22,7 +22,6 @@ namespace FileParser
                 while ((line = sr.ReadLine()) != null)
                 {
                     lines.Add(line);
-                    //Console.WriteLine(line);
                 }
             }
             return lines;
@@ -72,9 +71,13 @@ namespace FileParser
             }
 
             if (s.Contains(Constants.READ))
+            {
                 ReadValue(s.Split(' ')[1]);
+            }
             if (s.Contains(Constants.PRINT))
+            {
                 PrintValue(s.Split(' ')[1]);
+            }
             if (s.Contains(" = "))
             {
                 s = s.Replace(" ", "");

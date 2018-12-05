@@ -8,20 +8,20 @@ namespace FileParser
 {
     public class Checker
     {
-        public static Operation check(char operation)
+        public static Operation check(char operation, List<int> num)
         {
             switch (operation)
             {
                 case Constants.PLUS:
-                    return new Add();
+                    return new Add(num[1], num[0]);
                 case Constants.MINUS:
-                    return new Subtract();
+                    return new Subtract(num[1], num[0]);
                 case Constants.DIVIDE:
-                    return new Divide();
+                    return new Divide(num[1], num[0]);
                 case Constants.MULTIPLY:
-                    return new Multiply();
+                    return new Multiply(num[1], num[0]);
                 case Constants.REMAINDER:
-                    return new Remainder();
+                    return new Remainder(num[1], num[0]);
             }
             return null;
         }

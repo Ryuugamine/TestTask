@@ -8,7 +8,15 @@ namespace FileParser
 {
     public class Add : Operation
     {
-        public override int performAction(int a, int b)
+        private int a, b;
+
+        public Add(int a, int b)
+        {
+            this.a = a;
+            this.b = b;
+        }
+
+        public override int performAction()
         {
             return a+b;
         }

@@ -10,16 +10,12 @@ namespace FileParser
     {
         static private bool IsDelimeter(char c)
         {
-            if ((" ".IndexOf(c) != -1))
-                return true;
-            return false;
+            return (" ".IndexOf(c) != -1);
         }
 
         static private bool IsOperator(char с)
         {
-            if ("+-/*%()".IndexOf(с) != -1)
-                return true;
-            return false;
+            return ("+-/*%()".IndexOf(с) != -1);
         }
 
         static private byte GetPriority(char s)
@@ -30,9 +26,10 @@ namespace FileParser
                 case Constants.RIGHT_HOOK: return 1;
                 case Constants.PLUS: return 2;
                 case Constants.MINUS: return 3;
-                case Constants.REMAINDER: return 4;
-                case Constants.DIVIDE: return 4;
-                case Constants.MULTIPLY: return 4;
+                case Constants.REMAINDER:
+                case Constants.DIVIDE:
+                case Constants.MULTIPLY:
+                    return 4;
                 default: return 5;
             }
         }
@@ -40,8 +37,7 @@ namespace FileParser
         static public int Calculate(string input)
         {
             string output = GetExpression(input);
-            int result = Counting(output);
-            return result;
+            return Counting(output);
         }
 
         static private string GetExpression(string input)
@@ -51,9 +47,11 @@ namespace FileParser
 
             for (int i = 0; i < input.Length; i++) 
             {
-                
+
                 if (IsDelimeter(input[i]))
-                    continue; 
+                {
+                    continue;
+                }
 
                 
                 if (Char.IsDigit(input[i])) 
@@ -75,10 +73,12 @@ namespace FileParser
                 if (IsOperator(input[i])) 
                 {
                     if (input[i] == Constants.LEFT_HOOK)
-                        operStack.Push(input[i]); 
-                    else if (input[i] == Constants.RIGHT_HOOK) 
                     {
-                       
+                        operStack.Push(input[i]);
+                    }
+                    else if (input[i] == Constants.RIGHT_HOOK)
+                    {
+
                         char s = operStack.Pop();
 
                         while (s != Constants.LEFT_HOOK)
@@ -87,20 +87,25 @@ namespace FileParser
                             s = operStack.Pop();
                         }
                     }
-                    else 
+                    else
                     {
-                        if (operStack.Count > 0) 
-                            if (GetPriority(input[i]) <= GetPriority(operStack.Peek())) 
-                                output += operStack.Pop().ToString() + " "; 
-
+                        if (operStack.Count > 0)
+                        {
+                            if (GetPriority(input[i]) <= GetPriority(operStack.Peek()))
+                            {
+                                output += operStack.Pop().ToString() + " ";
+                            }
+                        }
                         operStack.Push(char.Parse(input[i].ToString()));
 
                     }
                 }
             }
-            
+
             while (operStack.Count > 0)
+            {
                 output += operStack.Pop() + " ";
+            }
 
             return output;
         }
@@ -128,11 +133,12 @@ namespace FileParser
                 }
                 else if (IsOperator(input[i])) 
                 {
-                    
-                    int a = temp.Pop();
-                    int b = temp.Pop();
 
-                    result = Checker.check(input[i]).performAction(b, a);
+                    List<int> num = new List<int>();
+                    num.Add(temp.Pop());
+                    num.Add(temp.Pop());
+
+                    result = Checker.check(input[i], num).performAction();
                     temp.Push(result);
                 }
             }
