@@ -22,6 +22,10 @@ namespace FileParser
 
                 for(int i = 0; i<lines.Count; i++)
                 {
+                    if (lines[i] == null || lines[i].Equals(""))
+                    {
+                        continue;
+                    }
 
                     if (lines[i].Equals(Constants.END))
                     {

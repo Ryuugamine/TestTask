@@ -31,40 +31,30 @@ namespace FileParser
         {
             s = s.Substring(3);
 
-            String[] paths = s.Split(' ');
-
-            switch (paths[1])
+            if (!s.Equals(""))
             {
-                case "!=":
-                    if (GetValues(paths[0]) != GetValues(paths[2]))
-                        return ParseLine(s.Substring(s.IndexOf(paths[2]) + paths[2].Length + 1));
-                    break;
-                case "==":
-                    if (GetValues(paths[0]) == GetValues(paths[2]))
-                        return ParseLine(s.Substring(s.IndexOf(paths[2]) + paths[2].Length + 1));
-                    break;
-                case ">=":
-                    if (GetValues(paths[0]) >= GetValues(paths[2]))
-                        return ParseLine(s.Substring(s.IndexOf(paths[2]) + paths[2].Length + 1));
-                    break;
-                case "<=":
-                    if (GetValues(paths[0]) <= GetValues(paths[2]))
-                        return ParseLine(s.Substring(s.IndexOf(paths[2]) + paths[2].Length + 1));
-                    break;
-                case ">":
-                    if (GetValues(paths[0]) > GetValues(paths[2]))
-                        return ParseLine(s.Substring(s.IndexOf(paths[2]) + paths[2].Length + 1));
-                    break;
-                case "<":
-                    if (GetValues(paths[0]) < GetValues(paths[2]))
-                        return ParseLine(s.Substring(s.IndexOf(paths[2]) + paths[2].Length + 1));
-                    break;
+                String[] paths = s.Split(' ');
+
+                List<int> num = new List<int>();
+                num.Add(GetValues(paths[0]));
+                num.Add(GetValues(paths[2]));
+
+                if (Checker.CheckCondition(paths[1], num).Check())
+                {
+                    return ParseLine(s.Substring(s.IndexOf(paths[2]) + paths[2].Length + 1));
+                }
+
+                return null;
             }
-            return null;
+            else
+            {
+                return null;
+            }
         }
 
         public static String ParseLine(String s)
         {
+            // тут вроде на null проверять не надо, итак одни условия
             if (s.Contains(Constants.GO_TO))
             {
                 return s.Split(' ')[1];

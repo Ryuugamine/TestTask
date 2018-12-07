@@ -42,107 +42,121 @@ namespace FileParser
 
         static private string GetExpression(string input)
         {
-            string output = string.Empty; 
-            Stack<char> operStack = new Stack<char>(); 
-
-            for (int i = 0; i < input.Length; i++) 
+            if (!input.Equals("") && input != null)
             {
+                string output = string.Empty;
+                Stack<char> operStack = new Stack<char>();
 
-                if (IsDelimeter(input[i]))
+                for (int i = 0; i < input.Length; i++)
                 {
-                    continue;
-                }
 
-                
-                if (Char.IsDigit(input[i])) 
-                {
-                   
-                    while (!IsDelimeter(input[i]) && !IsOperator(input[i]))
+                    if (IsDelimeter(input[i]))
                     {
-                        output += input[i]; 
-                        i++; 
-
-                        if (i == input.Length) break;
+                        continue;
                     }
 
-                    output += " "; 
-                    i--; 
-                }
 
-                
-                if (IsOperator(input[i])) 
-                {
-                    if (input[i] == Constants.LEFT_HOOK)
-                    {
-                        operStack.Push(input[i]);
-                    }
-                    else if (input[i] == Constants.RIGHT_HOOK)
+                    if (Char.IsDigit(input[i]))
                     {
 
-                        char s = operStack.Pop();
-
-                        while (s != Constants.LEFT_HOOK)
+                        while (!IsDelimeter(input[i]) && !IsOperator(input[i]))
                         {
-                            output += s.ToString() + ' ';
-                            s = operStack.Pop();
+                            output += input[i];
+                            i++;
+
+                            if (i == input.Length) break;
                         }
+
+                        output += " ";
+                        i--;
                     }
-                    else
+
+
+                    if (IsOperator(input[i]))
                     {
-                        if (operStack.Count > 0)
+                        if (input[i] == Constants.LEFT_HOOK)
                         {
-                            if (GetPriority(input[i]) <= GetPriority(operStack.Peek()))
+                            operStack.Push(input[i]);
+                        }
+                        else if (input[i] == Constants.RIGHT_HOOK)
+                        {
+
+                            char s = operStack.Pop();
+
+                            while (s != Constants.LEFT_HOOK)
                             {
-                                output += operStack.Pop().ToString() + " ";
+                                output += s.ToString() + ' ';
+                                s = operStack.Pop();
                             }
                         }
-                        operStack.Push(char.Parse(input[i].ToString()));
+                        else
+                        {
+                            if (operStack.Count > 0)
+                            {
+                                if (GetPriority(input[i]) <= GetPriority(operStack.Peek()))
+                                {
+                                    output += operStack.Pop().ToString() + " ";
+                                }
+                            }
+                            operStack.Push(char.Parse(input[i].ToString()));
 
+                        }
                     }
                 }
-            }
 
-            while (operStack.Count > 0)
+                while (operStack.Count > 0)
+                {
+                    output += operStack.Pop() + " ";
+                }
+
+                return output;
+            }
+            else
             {
-                output += operStack.Pop() + " ";
+                return null;
             }
-
-            return output;
         }
 
         static private int Counting(string input)
         {
-            int result = 0; 
-            Stack<int> temp = new Stack<int>(); 
-
-            for (int i = 0; i < input.Length; i++) 
+            if (!input.Equals("") && input != null)
             {
-                
-                if (Char.IsDigit(input[i]))
-                {
-                    string a = string.Empty;
+                int result = 0;
+                Stack<int> temp = new Stack<int>();
 
-                    while (!IsDelimeter(input[i]) && !IsOperator(input[i])) 
+                for (int i = 0; i < input.Length; i++)
+                {
+
+                    if (Char.IsDigit(input[i]))
                     {
-                        a += input[i]; 
-                        i++;
-                        if (i == input.Length) break;
+                        string a = string.Empty;
+
+                        while (!IsDelimeter(input[i]) && !IsOperator(input[i]))
+                        {
+                            a += input[i];
+                            i++;
+                            if (i == input.Length) break;
+                        }
+                        temp.Push(int.Parse(a));
+                        i--;
                     }
-                    temp.Push(int.Parse(a));
-                    i--;
-                }
-                else if (IsOperator(input[i])) 
-                {
+                    else if (IsOperator(input[i]))
+                    {
 
-                    List<int> num = new List<int>();
-                    num.Add(temp.Pop());
-                    num.Add(temp.Pop());
+                        List<int> num = new List<int>();
+                        num.Add(temp.Pop());
+                        num.Add(temp.Pop());
 
-                    result = Checker.check(input[i], num).performAction();
-                    temp.Push(result);
+                        result = Checker.CheckOperation(input[i], num).performAction();
+                        temp.Push(result);
+                    }
                 }
+                return temp.Peek();
             }
-            return temp.Peek();
+            else
+            {
+                return 0;
+            }
         }
     }
 }

@@ -22,5 +22,12 @@ namespace FileParser
         public const string IF = "if";
         public const string END = "end";
 
+        public const string EQUALLY = "==";
+        public const string NOT_EQUALLY = "!=";
+        public const string MORE = ">";
+        public const string LESS = "<";
+        public const string MORE_EQUALLY = ">=";
+        public const string LESS_EQUALLY = "<=";
+
     }
 }
