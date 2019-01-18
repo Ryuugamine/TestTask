@@ -44,6 +44,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\Add.cs" />
+    <Compile Include="Logic\BoolValue.cs" />
+    <Compile Include="Logic\Equally.cs" />
+    <Compile Include="Logic\Less.cs" />
+    <Compile Include="Logic\LessEqually.cs" />
+    <Compile Include="Logic\More.cs" />
+    <Compile Include="Logic\MoreEqually.cs" />
+    <Compile Include="Logic\NotEqually.cs" />
     <Compile Include="Utils\Checker.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Actions\Divide.cs" />
